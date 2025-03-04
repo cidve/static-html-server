@@ -36,8 +36,35 @@ class LeafNode(HTMLNode):
         return f"LeafNode({self.tag}, {self.value}, {self.props})"
 
 
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag=tag, value=None, children=children, props=props)
+    
+    def to_html(self):
+        if not self.tag:
+            raise ValueError("invalid HTML: no tag")
+        html_str = ''
+        for child in self.children:
+            if not isinstance(child, HTMLNode):
+                raise ValueError("invalid HTML: Children must be HTMLNode objects")
+            if isinstance(child, LeafNode):
+                if not child.value:
+                    raise ValueError("invalid HTML: Children with no value")
+            html_str += child.to_html()
+        return f"<{self.tag}{self.props_to_html()}>{html_str}</{self.tag}>"
+
+    def __repr__(self):
+        return f"ParentNode({self.tag}, {self.value}, {self.children}, {self.props})"
+
+
 if __name__ == "__main__":
-    test_1 = HTMLNode(tag="a", value="Click me!", props={"href": "https://www.google.com", "target": "_blank"})
-    # print(test_1.to_html())  # <a href="https://www.google.com" target="_blank">Click me!</a>
-    print(str(test_1))  # HTMLNode(a, Click me!, None, {'href': 'https://www.google.com', 'target': '_blank'})
-    print(test_1.props_to_html())  # href="https://www.google.com" target="_blank"
+    child_node = LeafNode("span", "child")
+    parent_node = ParentNode("div", [child_node])
+    print(parent_node.to_html())
+    print("Expected:", "<div><span>child</span></div>")
+
+    grandchild_node = LeafNode("b", "grandchild")
+    child_node = ParentNode("span", [grandchild_node])
+    parent_node = ParentNode("div", [child_node])
+    print(parent_node.to_html())
+    print("Expected:", "<div><span><b>grandchild</b></span></div>",)
