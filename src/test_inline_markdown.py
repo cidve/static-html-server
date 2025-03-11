@@ -1,6 +1,6 @@
 import unittest
 from inline_markdown import (
-    split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes
+    split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes, markdown_to_blocks
 )
 from textnode import TextNode, TextType
 
@@ -205,10 +205,10 @@ class TestInlineMarkdown(unittest.TestCase):
             new_nodes,
         )
 
-    def text_text_to_textnodes(self):
+    def test_text_to_textnodes(self):
         text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
         nodes = text_to_textnodes(text)
-        self.assertEqual(len(nodes), 9)
+        self.assertEqual(len(nodes), 10)
         self.assertEqual(nodes[0].text, "This is ")
         self.assertEqual(nodes[0].text_type, TextType.TEXT)
         self.assertEqual(nodes[1].text, "text")
@@ -234,13 +234,13 @@ class TestInlineMarkdown(unittest.TestCase):
         text_1 = "This text contains nothing special"
         nodes_1 = text_to_textnodes(text_1)
         self.assertEqual(len(nodes_1), 1)
-        self.assertEqual(nodes_1[0].text, "Ths text contains nothing special")
+        self.assertEqual(nodes_1[0].text, "This text contains nothing special")
         self.assertEqual(nodes_1[0].text_type, TextType.TEXT)
         
         text_2 = "This text contains nothing _special_ I lied has **Itatic** and _bold_"
         nodes_2 = text_to_textnodes(text_2)
-        self.assertEqual(len(nodes_2), 5)
-        self.assertEqual(nodes_2[0].text, "Ths text contains nothing ")
+        self.assertEqual(len(nodes_2), 6)
+        self.assertEqual(nodes_2[0].text, "This text contains nothing ")
         self.assertEqual(nodes_2[0].text_type, TextType.TEXT)
         self.assertEqual(nodes_2[1].text, "special")
         self.assertEqual(nodes_2[1].text_type, TextType.ITALIC)
@@ -252,19 +252,36 @@ class TestInlineMarkdown(unittest.TestCase):
         self.assertEqual(nodes_2[4].text_type, TextType.TEXT)
         self.assertEqual(nodes_2[5].text, "bold")
         self.assertEqual(nodes_2[5].text_type, TextType.ITALIC)
-        
+    
+    def test_text_to_textnodes_errors(self):
         text_3 = "this ones has an **error"
-        nodes_3 = text_to_textnodes(text_3)
-        self.assertEqual(len(nodes_3), 1)
-        self.assertEqual(nodes_3[0].text, "this ones has an **error")
-        self.assertEqual(nodes_3[0].text_type, TextType.TEXT)
-        
-        text_4 = "this ones has an _error"
-        nodes_4 = text_to_textnodes(text_4)
-        self.assertEqual(len(nodes_4), 1)
-        self.assertEqual(nodes_4[0].text, "this ones has an _error")
-        self.assertEqual(nodes_4[0].text_type, TextType.TEXT)
+        with self.assertRaises(ValueError):
+            text_to_textnodes(text_3)
 
+        text_4 = "this ones has an _error"
+        with self.assertRaises(ValueError):
+            text_to_textnodes(text_4)
+
+    def test_markdown_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+        
 
 if __name__ == "__main__":
     unittest.main()

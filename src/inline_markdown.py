@@ -93,17 +93,3 @@ def text_to_textnodes(text):
     nodes = split_nodes_link(nodes)
     nodes = split_nodes_image(nodes)
     return nodes
-
-
-if __name__ == '__main__':
-    # text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
-    # print(extract_markdown_images(text))
-    # node = TextNode(text, TextType.TEXT)
-    # print(split_nodes_image([node]))
-
-    text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
-    extract_markdown_links(text)
-    node = TextNode(text, TextType.TEXT)
-    print(split_nodes_link([node]))
-    # [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
-    
