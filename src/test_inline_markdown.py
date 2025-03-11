@@ -1,6 +1,6 @@
 import unittest
 from inline_markdown import (
-    split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link
+    split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes
 )
 from textnode import TextNode, TextType
 
@@ -205,6 +205,65 @@ class TestInlineMarkdown(unittest.TestCase):
             new_nodes,
         )
 
+    def text_text_to_textnodes(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes = text_to_textnodes(text)
+        self.assertEqual(len(nodes), 9)
+        self.assertEqual(nodes[0].text, "This is ")
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
+        self.assertEqual(nodes[1].text, "text")
+        self.assertEqual(nodes[1].text_type, TextType.BOLD)
+        self.assertEqual(nodes[2].text, " with an ")
+        self.assertEqual(nodes[2].text_type, TextType.TEXT)
+        self.assertEqual(nodes[3].text, "italic")
+        self.assertEqual(nodes[3].text_type, TextType.ITALIC)
+        self.assertEqual(nodes[4].text, " word and a ")
+        self.assertEqual(nodes[4].text_type, TextType.TEXT)
+        self.assertEqual(nodes[5].text, "code block")
+        self.assertEqual(nodes[5].text_type, TextType.CODE)
+        self.assertEqual(nodes[6].text, " and an ")
+        self.assertEqual(nodes[6].text_type, TextType.TEXT)
+        self.assertEqual(nodes[7].text, "obi wan image")
+        self.assertEqual(nodes[7].text_type, TextType.IMAGE)
+        self.assertEqual(nodes[8].text, " and a ")
+        self.assertEqual(nodes[8].text_type, TextType.TEXT)
+        self.assertEqual(nodes[9].text, "link")
+        self.assertEqual(nodes[9].text_type, TextType.LINK)
+        self.assertEqual(nodes[9].url, "https://boot.dev")
+        
+        text_1 = "This text contains nothing special"
+        nodes_1 = text_to_textnodes(text_1)
+        self.assertEqual(len(nodes_1), 1)
+        self.assertEqual(nodes_1[0].text, "Ths text contains nothing special")
+        self.assertEqual(nodes_1[0].text_type, TextType.TEXT)
+        
+        text_2 = "This text contains nothing _special_ I lied has **Itatic** and _bold_"
+        nodes_2 = text_to_textnodes(text_2)
+        self.assertEqual(len(nodes_2), 5)
+        self.assertEqual(nodes_2[0].text, "Ths text contains nothing ")
+        self.assertEqual(nodes_2[0].text_type, TextType.TEXT)
+        self.assertEqual(nodes_2[1].text, "special")
+        self.assertEqual(nodes_2[1].text_type, TextType.ITALIC)
+        self.assertEqual(nodes_2[2].text, " I lied has ")
+        self.assertEqual(nodes_2[2].text_type, TextType.TEXT)
+        self.assertEqual(nodes_2[3].text, "Itatic")
+        self.assertEqual(nodes_2[3].text_type, TextType.BOLD)
+        self.assertEqual(nodes_2[4].text, " and ")
+        self.assertEqual(nodes_2[4].text_type, TextType.TEXT)
+        self.assertEqual(nodes_2[5].text, "bold")
+        self.assertEqual(nodes_2[5].text_type, TextType.ITALIC)
+        
+        text_3 = "this ones has an **error"
+        nodes_3 = text_to_textnodes(text_3)
+        self.assertEqual(len(nodes_3), 1)
+        self.assertEqual(nodes_3[0].text, "this ones has an **error")
+        self.assertEqual(nodes_3[0].text_type, TextType.TEXT)
+        
+        text_4 = "this ones has an _error"
+        nodes_4 = text_to_textnodes(text_4)
+        self.assertEqual(len(nodes_4), 1)
+        self.assertEqual(nodes_4[0].text, "this ones has an _error")
+        self.assertEqual(nodes_4[0].text_type, TextType.TEXT)
 
 
 if __name__ == "__main__":
