@@ -16,7 +16,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             split_nodes = []
             sections = text.split(delimiter)
             for i in range(len(sections)):
-                if sections[i] == "":
+                if sections[i] == "" or sections[i] == None:
                     continue
                 if i % 2 == 0:
                     split_nodes.append(TextNode(sections[i], TextType.TEXT))
@@ -30,13 +30,15 @@ def extract_markdown_images(text):
     # takes raw markdown text and returns a list of tuples.
     # Each tuple should contain the alt text and the URL of any markdown images.
     # If there are no images, return an empty list.
-    pattern = re.compile(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)")
-    return pattern.findall(text)
+    pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    matches = re.findall(pattern, text)
+    return matches
 
 def extract_markdown_links(text):
     # extracts markdown links instead of images. It should return tuples of anchor text and URLs
-    pattern = re.compile(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)")
-    return pattern.findall(text)
+    pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    matches = re.findall(pattern, text)
+    return matches
 
 def split_nodes_image(old_nodes):
     new_nodes = []

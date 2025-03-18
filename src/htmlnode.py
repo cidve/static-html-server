@@ -1,5 +1,3 @@
-
-
 class HTMLNode():
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag              # A string representing the HTML tag name (e.g. "p", "a", "h1", etc.)
@@ -26,7 +24,9 @@ class LeafNode(HTMLNode):
         super().__init__(tag=tag, value=value, children=None, props=props)
         
     def to_html(self):
-        if not self.value:
+        if self.tag == "img" and self.value is None:
+            self.value = ""
+        if self.value is None:
             raise ValueError("invalid HTML: no value")
         if not self.tag:
             return str(self.value)
@@ -43,13 +43,12 @@ class ParentNode(HTMLNode):
     def to_html(self):
         if not self.tag:
             raise ValueError("invalid HTML: no tag")
+        if self.children is None:
+            raise ValueError("invalid HTML: no children")
         html_str = ''
         for child in self.children:
             if not isinstance(child, HTMLNode):
                 raise ValueError("invalid HTML: Children must be HTMLNode objects")
-            if isinstance(child, LeafNode):
-                if not child.value:
-                    raise ValueError("invalid HTML: Children with no value")
             html_str += child.to_html()
         return f"<{self.tag}{self.props_to_html()}>{html_str}</{self.tag}>"
 

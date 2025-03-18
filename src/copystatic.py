@@ -1,10 +1,7 @@
 import os
 import shutil
 
-def copy_directory(source, destination, erase=True):
-    if erase and os.path.exists(destination):
-        print(f"Deleting {destination}...")
-        shutil.rmtree(destination)
+def copy_directory(source, destination):
     if not os.path.exists(destination):
         os.makedirs(destination)
     for item in os.listdir(source):
