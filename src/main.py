@@ -13,7 +13,7 @@ dir_path_public = "./docs"
 markdown_folder_path = "./content/"
 template_path = "./template.html"
 html_folder_path = "./public/"
-default_basepath = "static-html-server/"
+default_basepath = "/"
 
 
 def main():
