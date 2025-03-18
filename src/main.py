@@ -1,6 +1,12 @@
 from textnode import TextNode, TextType
+from copystatic import copy_directory
+
+static_path = "./static"
+public_path = "./public"
+
 def main():
-    text_node = TextNode("Hello", TextType.BOLD, url="www.boot.dev")
-    print(text_node)
+
+    copy_directory(static_path, public_path, erase=True)
+
 
 main()
