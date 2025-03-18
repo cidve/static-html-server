@@ -23,7 +23,7 @@ def main():
     if os.path.exists(public_path):
         print(f"Deleting {public_path}...")
         shutil.rmtree(public_path)
-    copy_directory(static_path, public_path)
+    copy_directory(static_path, dir_path_public)
     generate_pages_recursive(markdown_folder_path, template_path, dir_path_public, basepath)
 
 main()
